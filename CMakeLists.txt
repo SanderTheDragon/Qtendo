@@ -1,0 +1,56 @@
+cmake_minimum_required (VERSION 3.10)
+project (Qtendo)
+
+
+
+#Compile .ui files
+set (UI_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/ui")
+set (UI_FILES
+    "${UI_ROOT}/window.ui")
+
+find_program (PYUIC5 pyuic5)
+add_custom_target (ui SOURCES ${UI_FILES})
+foreach (UI_FILE ${UI_FILES})
+    #CMake regex won't work, so this is required
+    string (SUBSTRING ${UI_FILE} 1 -1 UI_FILE_POST)
+    string (REPLACE "/" ";" UI_FILE_PARTS ${UI_FILE_POST})
+    list (REVERSE UI_FILE_PARTS)
+    list (GET UI_FILE_PARTS 0 UI_FILE_PART)
+    string (LENGTH ${UI_FILE_PART} LEN_PRE)
+    math (EXPR LEN "${LEN_PRE} - 3")
+    string (SUBSTRING ${UI_FILE_PART} 0 ${LEN} UI_FILE_TARGET_PRE)
+    set (UI_FILE_TARGET "ui_${UI_FILE_TARGET_PRE}.py")
+    list (REMOVE_AT UI_FILE_PARTS 0)
+    list (INSERT UI_FILE_PARTS 0 ${UI_FILE_TARGET})
+    list (REVERSE UI_FILE_PARTS)
+    string (REPLACE ";" "/" PY_FILE_PRE "${UI_FILE_PARTS}")
+    set (PY_FILE "/${PY_FILE_PRE}")
+    add_custom_command (TARGET ui PRE_BUILD
+        COMMAND echo "Compiling ${UI_FILE}"
+        COMMAND ${PYUIC5} ${UI_FILE} > ${PY_FILE})
+endforeach ()
+
+
+
+#Compile python
+set (PY_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/src")
+set (PY_MAIN "${PY_ROOT}/main.py")
+set (PY_FILES ${PY_FILES}
+    "${PY_ROOT}/main.py")
+
+foreach (PY_FILE ${PY_FILES})
+    string (REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/" "" TARGET_FILE ${PY_FILE})
+    set (PY_FILE_TUPLE_LIST_PRE ${PY_FILE_TUPLE_LIST_PRE} "( '${PY_FILE}', '${TARGET_FILE}' ), ")
+endforeach ()
+string (LENGTH ${PY_FILE_TUPLE_LIST_PRE} LEN_PRE)
+math (EXPR LEN "${LEN_PRE} - 2")
+string (SUBSTRING ${PY_FILE_TUPLE_LIST_PRE} 0 ${LEN} PY_FILE_TUPLE_LIST)
+
+configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/cmake/setup.py.in" "${CMAKE_BINARY_DIR}/setup.py")
+
+find_program (PYTHON python3)
+add_custom_target (cx ALL DEPENDS ui SOURCES ${PY_MAIN} ${PY_FILES})
+add_custom_command (TARGET cx
+    DEPENDS ui
+    COMMAND echo "Running setup.py"
+    COMMAND ${PYTHON} setup.py install)

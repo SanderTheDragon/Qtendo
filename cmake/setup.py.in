@@ -1,0 +1,25 @@
+import sys
+from cx_Freeze import setup, Executable
+
+sys.path.append('${CMAKE_CURRENT_SOURCE_DIR}')
+
+base = None
+if sys.platform == 'win32':
+    base = 'Win32GUI'
+
+options = {
+    'build_exe': {
+        'includes': [ 'atexit' ],
+        'include_files': [ ${PY_FILE_TUPLE_LIST} ],
+        'packages': [ 'ui', 'PyQt5' ]
+    },
+    'install_exe': {
+        'install_dir': '${CMAKE_BINARY_DIR}',
+        'force': True
+    }
+}
+
+setup(name='Qtendo',
+      version='0.1',
+      options=options,
+      executables=[ Executable('${PY_MAIN}', base=base, targetName='Qtendo') ])
