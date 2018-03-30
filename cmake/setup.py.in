@@ -11,7 +11,7 @@ options = {
     'build_exe': {
         'includes': [ 'atexit' ],
         'include_files': [ ${PY_FILE_TUPLE_LIST} ],
-        'packages': [ 'ui', 'PyQt5' ]
+        'packages': [ 'ui', 'res', 'PyQt5' ]
     },
     'install_exe': {
         'install_dir': '${CMAKE_BINARY_DIR}',

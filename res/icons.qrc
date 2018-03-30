@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/dolphin-emu.svg</file>
+        <file>icons/citra.svg</file>
+        <file>icons/mupen64plus.svg</file>
+        <file>icons/zsnes.png</file>
+        <file>icons/fceux.png</file>
+    </qresource>
+</RCC>
