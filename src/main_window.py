@@ -45,16 +45,20 @@ class MainWindow(QMainWindow, ui_window.Ui_Window):
 
         for i in range(len(self.emulators.keys())):
             emulator = self.emulators[list(emulators.keys())[i]]
-
             emulator['action'] = QAction()
+
             emulator['action'].setIcon(QIcon(':' + emulator['icon']))
-            emulator['action'].setIconText(emulator['name'])
             if i > 0:
                 emulator['action'].setIcon(QIcon(emulator['action'].icon().pixmap(QSize(24, 24), QIcon.Disabled)))
+
+            emulator['action'].setIconText(emulator['name'])
             emulator['action'].triggered.connect(lambda checked, index=i: self.change_emulator(index))
 
             self.toolBarEmulation.addAction(emulator['action'])
             self.stackedWidgetEmulation.insertWidget(i, emulator['widget'](emulator))
+
+            if len(emulator['path']) == 0:
+                self.toolBarEmulation.widgetForAction(emulator['action']).setStyleSheet('color: ' + QApplication.palette().color(QPalette.Disabled, QPalette.WindowText).name() + ';')
 
             if i + 1 < len(emulators.keys()):
                 self.toolBarEmulation.addSeparator()

@@ -185,5 +185,6 @@ CMakeLists.txt.user*
 
 
 
-# Ignore compiles ui files
+# Ignore compiled files
 ui/*.py
+res/*.py

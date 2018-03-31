@@ -25,6 +25,7 @@ def find():
         version = utils.execute(path, '-m')
         data['version'] = version.split(' ')[1][:-1]
     else:
+        data['path'] = ''
         data['version'] = 'Not Found'
 
     return data

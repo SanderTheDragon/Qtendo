@@ -24,6 +24,7 @@ def find():
         #No way to get version without opening a window
         data['version'] = ''
     else:
+        data['path'] = ''
         data['version'] = 'Not Found'
 
     return data

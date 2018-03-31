@@ -26,5 +26,4 @@ class Emulator(QWidget, ui_emulator.Ui_Emulator):
             self.iconLabel.setPixmap(QPixmap(':' + self.data['icon']).scaled(24, 24))
             self.gridLayout.addWidget(self.iconLabel, 0, 0)
 
-
         self.pathLabel.setText(self.data['path'])

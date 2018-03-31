@@ -30,6 +30,7 @@ def find():
 
         data['version'] = version_line.split(' ')[-1]
     else:
+        data['path'] = ''
         data['version'] = 'Not Found'
 
     return data
