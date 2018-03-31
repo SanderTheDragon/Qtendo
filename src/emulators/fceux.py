@@ -15,7 +15,9 @@ def find():
     data = {
         'name': 'FCEUX',
         'icon': '/icons/fceux.png',
-        'widget': EmulatorFceux
+        'widget': EmulatorFceux,
+        'platforms': { 'Nintendo Entertainment System': [ '.nes', '.unf', '.unif' ], 'Famicom Disk System': [ '.fds', '.unf', '.unif' ] },
+        'site': 'http://www.fceux.com/web/home.html'
     }
 
     if not path is None and len(path) > 0:

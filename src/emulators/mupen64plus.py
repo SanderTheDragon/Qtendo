@@ -15,7 +15,9 @@ def find():
     data = {
         'name': 'Mupen64Plus',
         'icon': '/icons/mupen64plus.svg',
-        'widget': EmulatorMupen64Plus
+        'widget': EmulatorMupen64Plus,
+        'platforms': { 'Nintendo 64': [ '.n64', '.z64', '.v64' ] },
+        'site': 'http://mupen64plus.org/'
     }
 
     if not path is None and len(path) > 0:

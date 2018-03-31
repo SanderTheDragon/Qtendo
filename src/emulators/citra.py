@@ -15,7 +15,9 @@ def find():
     data = {
         'name': 'Citra',
         'icon': '/icons/citra.svg',
-        'widget': EmulatorCitra
+        'widget': EmulatorCitra,
+        'platforms': { '3DS': [ '.3ds' ] },
+        'site': 'https://citra-emu.org/'
     }
 
     if not path is None and len(path) > 0:

@@ -15,7 +15,9 @@ def find():
     data = {
         'name': 'Dolphin Emulator',
         'icon': '/icons/dolphin-emu.svg',
-        'widget': EmulatorDolphin
+        'widget': EmulatorDolphin,
+        'platforms': { 'Gamecube': [ '.gcm', '.iso', '.gcz' ], 'Wii': [ '.iso', '.gcz', '.ciso', '.wbfs' ] },
+        'site': 'https://dolphin-emu.org/'
     }
 
     if not path is None and len(path) > 0:

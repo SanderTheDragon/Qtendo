@@ -15,7 +15,9 @@ def find():
     data = {
         'name': 'ZSNES',
         'icon': '/icons/zsnes.png',
-        'widget': EmulatorZsnes
+        'widget': EmulatorZsnes,
+        'platforms': { 'Super Nintendo Entertainment System': [ '.sfc', '.smc' ] },
+        'site': 'http://zsnes.com/'
     }
 
     if len(path) > 0:

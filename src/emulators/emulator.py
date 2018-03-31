@@ -14,6 +14,7 @@ class Emulator(QWidget, ui_emulator.Ui_Emulator):
         name = self.nameLabel.text()
         name = name.replace('{NAME}', self.data['name'])
         name = name.replace('{VERSION}', self.data['version'])
+        name = name.replace('{URL}', self.data['site'])
         self.nameLabel.setText(name)
 
         if self.data['icon'].endswith('.svg'):
@@ -27,3 +28,9 @@ class Emulator(QWidget, ui_emulator.Ui_Emulator):
             self.gridLayout.addWidget(self.iconLabel, 0, 0)
 
         self.pathLabel.setText(self.data['path'])
+
+        platformText = ''
+        for platform in self.data['platforms'].keys():
+            platformText += '&nbsp;&nbsp;&nbsp;&nbsp;• ' + platform + ' (' + ', '.join(self.data['platforms'][platform]) + ')<br/>'
+
+        self.platformLabel.setText(self.platformLabel.text().replace('{PLATFORMS}', platformText))
