@@ -56,7 +56,6 @@ set (PY_FILES ${PY_FILES}
     "${PY_ROOT}/utils.py"
     "${PY_ROOT}/main_window.py"
     "${PY_ROOT}/emulators/emulator.py"
-    "${PY_ROOT}/emulators/emulators.py"
     "${PY_ROOT}/emulators/fceux.py"
     "${PY_ROOT}/emulators/zsnes.py"
     "${PY_ROOT}/emulators/mupen64plus.py"
