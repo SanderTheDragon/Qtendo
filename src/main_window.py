@@ -30,12 +30,19 @@ class MainWindow(QMainWindow, ui_window.Ui_Window):
         self.emulator_found.connect(self.add_emulator)
         self.emulators_loaded.connect(self.reset_status)
 
+        #Add toolbar
+        self.toolBar = QToolBar()
+        self.toolBar.addAction(self.actionPageEmulation)
+        self.toolBar.setFloatable(False)
+        self.toolBar.setMovable(False)
+        self.toolBar.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        self.gridLayout.addWidget(self.toolBar, 1, 0)
+
         #Add a second toolbar on emulation page
         self.toolBarEmulation = QToolBar()
         self.toolBarEmulation.setFloatable(False)
         self.toolBarEmulation.setMovable(False)
         self.toolBarEmulation.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
-        self.toolBarEmulation.setStyleSheet('QToolButton { padding-right: -3px; }')
         self.pageEmulationLayout.addWidget(self.toolBarEmulation, 0, 0)
 
         #Add progress bar to status bar
@@ -51,9 +58,7 @@ class MainWindow(QMainWindow, ui_window.Ui_Window):
         self.statusBar.showMsg = lambda msg, timeout: ( logging.info(msg), self.statusBar.showMessage(msg, timeout) )
 
         #Styling
-        system_colors = QApplication.palette()
-        #The color is close enough to the default border color
-        self.setStyleSheet('QToolBar { border-bottom: 1px solid ' + system_colors.color(QPalette.Disabled, QPalette.Button).darker(115).name() + '; }')
+        self.setStyleSheet('QToolButton { padding-right: -3px; }')
 
     def showEvent(self, ev):
         QMainWindow.showEvent(self, ev)
