@@ -17,7 +17,8 @@ def find():
         'icon': '/icons/zsnes.png',
         'widget': EmulatorZsnes,
         'platforms': { 'Super Nintendo Entertainment System': [ '.sfc', '.smc' ] },
-        'site': 'http://zsnes.com/'
+        'site': 'http://zsnes.com/',
+        'arguments': [ '-m' ]
     }
 
     if len(path) > 0:

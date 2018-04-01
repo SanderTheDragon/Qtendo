@@ -17,7 +17,8 @@ def find():
         'icon': '/icons/mupen64plus.svg',
         'widget': EmulatorMupen64Plus,
         'platforms': { 'Nintendo 64': [ '.n64', '.z64', '.v64' ] },
-        'site': 'http://mupen64plus.org/'
+        'site': 'http://mupen64plus.org/',
+        'arguments': [ ]
     }
 
     if not path is None and len(path) > 0:

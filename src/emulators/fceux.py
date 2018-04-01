@@ -17,7 +17,8 @@ def find():
         'icon': '/icons/fceux.png',
         'widget': EmulatorFceux,
         'platforms': { 'Nintendo Entertainment System': [ '.nes', '.unf', '.unif' ], 'Famicom Disk System': [ '.fds', '.unf', '.unif' ] },
-        'site': 'http://www.fceux.com/web/home.html'
+        'site': 'http://www.fceux.com/web/home.html',
+        'arguments': [ '--nogui', '1', '--noframe', '0' ]
     }
 
     if not path is None and len(path) > 0:

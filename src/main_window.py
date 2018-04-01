@@ -99,8 +99,6 @@ class MainWindow(QMainWindow, ui_window.Ui_Window):
         self.emulators[emulator['name']] = emulator
 
         i = self.stackedWidgetEmulation.count()
-        self.taskProgress.setVal((100 / emulator_count) * (i + 1))
-
         emulator['action'] = QAction()
 
         emulator['action'].setIcon(QIcon(':' + emulator['icon']))
@@ -116,6 +114,8 @@ class MainWindow(QMainWindow, ui_window.Ui_Window):
 
         if len(emulator['path']) == 0:
             self.toolBarEmulation.widgetForAction(emulator['action']).setStyleSheet('color: ' + QApplication.palette().color(QPalette.Disabled, QPalette.WindowText).name() + ';')
+
+        self.taskProgress.setValue((100 / emulator_count) * (i + 1))
 
     def reset_status(self):
         self.statusBar.clearMessage()

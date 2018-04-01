@@ -17,7 +17,8 @@ def find():
         'icon': '/icons/dolphin-emu.svg',
         'widget': EmulatorDolphin,
         'platforms': { 'Gamecube': [ '.gcm', '.iso', '.gcz' ], 'Wii': [ '.iso', '.gcz', '.ciso', '.wbfs' ] },
-        'site': 'https://dolphin-emu.org/'
+        'site': 'https://dolphin-emu.org/',
+        'arguments': [ ]
     }
 
     if not path is None and len(path) > 0:

@@ -17,7 +17,8 @@ def find():
         'icon': '/icons/citra.svg',
         'widget': EmulatorCitra,
         'platforms': { '3DS': [ '.3ds' ] },
-        'site': 'https://citra-emu.org/'
+        'site': 'https://citra-emu.org/',
+        'arguments': [ ]
     }
 
     if not path is None and len(path) > 0:

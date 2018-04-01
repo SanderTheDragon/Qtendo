@@ -53,14 +53,25 @@ endforeach ()
 set (PY_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/src")
 set (PY_MAIN "${PY_ROOT}/main.py")
 set (PY_FILES ${PY_FILES}
+    "${PY_ROOT}/__init__.py"
     "${PY_ROOT}/utils.py"
     "${PY_ROOT}/main_window.py"
+    "${PY_ROOT}/emulators/__init__.py"
     "${PY_ROOT}/emulators/emulator.py"
     "${PY_ROOT}/emulators/fceux.py"
     "${PY_ROOT}/emulators/zsnes.py"
     "${PY_ROOT}/emulators/mupen64plus.py"
     "${PY_ROOT}/emulators/dolphin.py"
-    "${PY_ROOT}/emulators/citra.py")
+    "${PY_ROOT}/emulators/citra.py"
+    "${PY_ROOT}/roms/__init__.py"
+    "${PY_ROOT}/roms/rom.py"
+    "${PY_ROOT}/roms/nes.py"
+    "${PY_ROOT}/roms/fds.py"
+    "${PY_ROOT}/roms/snes.py"
+    "${PY_ROOT}/roms/n64.py"
+    "${PY_ROOT}/roms/gamecube.py"
+    "${PY_ROOT}/roms/wii.py"
+    "${PY_ROOT}/roms/3ds.py")
 
 foreach (PY_FILE ${PY_FILES})
     string (REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/" "" TARGET_FILE ${PY_FILE})

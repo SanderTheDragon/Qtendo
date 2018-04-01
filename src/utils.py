@@ -40,3 +40,29 @@ def execute(path, args):
         arguments = args
 
     return subprocess.run([ path ] + arguments, stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout.decode('utf-8').strip()
+
+def find_files(root, filters):
+    if type(filters) == str:
+        filters = [ filters ]
+
+    file_list = []
+    for root_, directories, files in os.walk(root):
+        for file in files:
+            if '.' + file.split('.')[-1] in filters:
+                file_list.append(os.path.join(root_, file))
+
+    return file_list
+
+def get_short_platform_name(name):
+    if ' ' in name:
+        short_name = ''
+
+        for word in name.split(' '):
+            if word.isdigit():
+                short_name += word
+            else:
+                short_name += word[0].lower()
+
+        return short_name
+    else:
+        return name.lower()
