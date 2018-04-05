@@ -16,3 +16,17 @@ def verify(path):
             return True
 
     return False
+
+def get_region_name(region):
+    return { '7': 'Beta', 'A': 'Asia', 'B': 'Brazil', 'C': 'China', 'D': 'Germany', 'E': 'United States', 'F': 'France', 'G': 'Gateway 64', 'H': 'The Netherlands', 'I': 'Italy', 'J': 'Japan', 'K': 'Korea', 'L': 'Gateway 64', 'N': 'Canada', 'P': 'Europe', 'S': 'Spain', 'U': 'Australia', 'W': 'Scandinavia', 'Y': 'Europe', 'Y': 'Europe' }[region.decode('utf-8')]
+
+def get_info(path):
+    header = get_header(path)
+
+    return {
+        'platform': 'N64',
+        'id': header.cartridge_id.decode('utf-8'),
+        'title': header.image_name.decode('utf-8'),
+        'region_code': bytes([ header.country_code ]).decode('utf-8'),
+        'region': get_region_name(bytes([ header.country_code ]))
+    }

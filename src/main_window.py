@@ -50,8 +50,6 @@ class MainWindow(QMainWindow, ui_window.Ui_Window):
         self.taskProgress.setVal = lambda x: ( self.taskProgress.setVisible(True), self.taskProgress.setValue(x) )
         self.taskProgress.setVal(0)
         self.taskProgress.setTextVisible(False)
-        self.taskProgress.setMaximumHeight(16)
-        self.taskProgress.setStyleSheet('margin-right: 8px;')
         self.statusBar.addPermanentWidget(self.taskProgress)
 
         #Also print messages to terminal
@@ -115,7 +113,7 @@ class MainWindow(QMainWindow, ui_window.Ui_Window):
         if len(emulator['path']) == 0:
             self.toolBarEmulation.widgetForAction(emulator['action']).setStyleSheet('color: ' + QApplication.palette().color(QPalette.Disabled, QPalette.WindowText).name() + ';')
 
-        self.taskProgress.setValue((100 / emulator_count) * (i + 1))
+        self.taskProgress.setVal(int((100.0 / float(emulator_count)) * float(i + 1)))
 
     def reset_status(self):
         self.statusBar.clearMessage()

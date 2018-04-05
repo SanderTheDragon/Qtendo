@@ -8,3 +8,20 @@ def get_header(path):
 
 def verify(path):
     return get_header(path).gamecube_magicword == 0xC2339F3D
+
+def get_region_name(region):
+    return { 'D': 'Germany', 'E': 'United States', 'F': 'France', 'I': 'Italy', 'J': 'Japan', 'K': 'Korea', 'P': 'Europe', 'R': 'Russia', 'S': 'Spain', 'T': 'Taiwan', 'U': 'Australia' }[region.decode('utf-8')]
+
+def get_id(header):
+    return header.disc_id.decode('utf-8') + header.game_code.decode('utf-8') + header.region_code.decode('utf-8') + header.maker_code.decode('utf-8')
+
+def get_info(path):
+    header = get_header(path)
+
+    return {
+        'platform': 'GC',
+        'id': get_id(header),
+        'title': header.game_title.decode('utf-8'),
+        'region_code': header.region_code.decode('utf-8'),
+        'region': get_region_name(header.region_code)
+    }
