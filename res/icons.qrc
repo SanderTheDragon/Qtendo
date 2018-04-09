@@ -5,5 +5,6 @@
         <file>icons/mupen64plus.svg</file>
         <file>icons/zsnes.png</file>
         <file>icons/fceux.png</file>
+        <file>icons/gpl.png</file>
     </qresource>
 </RCC>

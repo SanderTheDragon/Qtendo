@@ -1,11 +1,12 @@
 import logging
 from PyQt5 import QtCore
-from PyQt5.QtCore import QCoreApplication, Qt, QSize
+from PyQt5.QtCore import QCoreApplication, Qt, QSize, QSettings, QByteArray
 from PyQt5.QtGui import QPalette, QIcon
 from PyQt5.QtWidgets import QApplication, QMainWindow, QToolBar, QAction, QProgressBar
 from threading import Thread
 
 from res import icons
+from src import settings_dialog, about_dialog
 from src.emulators import fceux, zsnes, mupen64plus, dolphin, citra
 from ui import ui_window
 
@@ -20,8 +21,14 @@ class MainWindow(QMainWindow, ui_window.Ui_Window):
         self.setupUi(self)
         self.emulators = {}
 
+        self.settings = QSettings('SanderTheDragon', 'Qtendo')
+        if self.settings.value('qtendo/window/restore', True, type=bool):
+            self.restoreGeometry(self.settings.value('qtendo/window/geometry', type=QByteArray))
+
         #Menu actions
         self.actionQuit.triggered.connect(QCoreApplication.quit)
+        self.actionSettings.triggered.connect(lambda: settings_dialog.SettingsDialog(parent=self).exec_())
+        self.actionAbout.triggered.connect(lambda: about_dialog.AboutDialog(parent=self).exec_())
 
         #Toolbar actions
         self.actionPageEmulation.triggered.connect(lambda: self.stackedWidget.setCurrentIndex(0))
@@ -61,7 +68,13 @@ class MainWindow(QMainWindow, ui_window.Ui_Window):
     def showEvent(self, ev):
         QMainWindow.showEvent(self, ev)
         self.statusBar.showMsg('Searching for emulators', 1000)
-        Thread(target=self.find_emulators).start()
+        Thread(target=self.find_emulators, daemon=True).start()
+
+    def closeEvent(self, ev):
+        QMainWindow.closeEvent(self, ev)
+
+        if self.settings.value('qtendo/window/restore', True, type=bool):
+            self.settings.setValue('qtendo/window/geometry', self.saveGeometry())
 
     def change_emulator(self, index):
         current = self.stackedWidgetEmulation.currentIndex()

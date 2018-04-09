@@ -7,7 +7,9 @@ project (Qtendo)
 set (UI_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/ui")
 set (UI_FILES
     "${UI_ROOT}/window.ui"
-    "${UI_ROOT}/emulator.ui")
+    "${UI_ROOT}/emulator.ui"
+    "${UI_ROOT}/settings.ui"
+    "${UI_ROOT}/about.ui")
 
 find_program (PYUIC5 pyuic5)
 add_custom_target (ui SOURCES ${UI_FILES})
@@ -56,6 +58,9 @@ set (PY_FILES ${PY_FILES}
     "${PY_ROOT}/__init__.py"
     "${PY_ROOT}/utils.py"
     "${PY_ROOT}/main_window.py"
+    "${PY_ROOT}/settings_dialog.py"
+    "${PY_ROOT}/system.py"
+    "${PY_ROOT}/about_dialog.py"
     "${PY_ROOT}/emulators/__init__.py"
     "${PY_ROOT}/emulators/emulator.py"
     "${PY_ROOT}/emulators/fceux.py"

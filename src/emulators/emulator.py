@@ -1,6 +1,8 @@
+import logging
+import os
 import subprocess
 from PyQt5 import QtCore
-from PyQt5.QtCore import QSize
+from PyQt5.QtCore import QSize, QSettings, QDir
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtWidgets import QWidget, QLabel, QTableWidgetItem
@@ -20,6 +22,8 @@ class Emulator(QWidget, ui_emulator.Ui_Emulator):
         self.data = data
         self.processes = {}
         self.roms = []
+
+        self.settings = QSettings('SanderTheDragon', 'Qtendo')
 
         name = self.nameLabel.text()
         name = name.replace('{NAME}', self.data['name'])
@@ -54,28 +58,40 @@ class Emulator(QWidget, ui_emulator.Ui_Emulator):
 
         self.game_found.connect(self.add_game)
         self.games_loaded.connect(self.done_loading)
-        Thread(target=self.find_games).start()
+        Thread(target=self.find_games, daemon=True).start()
 
         self.gameList.cellDoubleClicked.connect(lambda row, column: self.launch_game(self.gameList.item(row, 4).text()))
+        self.refreshButton.pressed.connect(lambda: ( self.reset_list(), Thread(target=self.find_games, daemon=True).start() ))
 
     def find_games(self):
         file_types = [ ]
         for platform in self.data['platforms'].keys():
             file_types += self.data['platforms'][platform]
 
-        possible_games = utils.find_files('/', file_types)
-        games_length = len(possible_games)
-        for game in possible_games:
-            index = self.gameList.rowCount()
+        logging.debug('[' + self.data['name'] + '] Searching for ( ' + ', '.join(file_types) + ' ) files')
 
-            rom_ = rom.Rom(game, self.data['platforms'])
-            if rom_.is_rom:
-                self.roms.append(rom_)
-                info = rom_.module.get_info(game)
-                self.game_found.emit(index, info, game, games_length)
-            else:
-                games_length -= 1
+        paths = self.settings.value('emulation/roms/paths', [ QDir.homePath() ], type=str)
+        for path in paths:
+            if not os.path.isdir(path):
+                continue
 
+            possible_games = utils.find_files(path, file_types)
+            games_length = len(possible_games)
+            logging.debug('[' + self.data['name'] + '] Found ' + str(games_length) + ' possible ROM' + ('s' if games_length != 1 else ''))
+            for game in possible_games:
+                index = self.gameList.rowCount()
+
+                rom_ = rom.Rom(game, self.data['platforms'])
+                if rom_.is_rom:
+                    logging.debug('[' + self.data['name'] + '] \'' + game + '\' is a valid ROM')
+                    self.roms.append(rom_)
+                    info = rom_.module.get_info(game)
+                    self.game_found.emit(index, info, game, games_length)
+                else:
+                    logging.debug('[' + self.data['name'] + '] \'' + game + '\' is not a valid ROM')
+                    games_length -= 1
+
+        logging.debug('[' + self.data['name'] + '] Found ' + str(games_length) + ' ROM' + ('s' if games_length != 1 else ''))
         self.games_loaded.emit()
 
     def add_game(self, index, info, path, count):
@@ -92,9 +108,19 @@ class Emulator(QWidget, ui_emulator.Ui_Emulator):
 
         self.progressBar.setValue(int(100.0 / float(count) * float(index + 1)))
 
+    def reset_list(self):
+        self.refreshButton.setEnabled(False)
+        self.progressBar.setValue(0)
+        self.progressBar.setVisible(True)
+        self.gameList.setSortingEnabled(False)
+        self.gameList.setRowCount(0)
+        self.roms.clear()
+
     def done_loading(self):
+        self.gameList.setSortingEnabled(True)
         self.gameList.sortItems(1)
         self.progressBar.setVisible(False)
+        self.refreshButton.setEnabled(True)
 
     def launch_game(self, path):
         self.processes['path'] = subprocess.Popen([ self.data['path'] ] + self.data['arguments'] + [ path ], stdout=subprocess.PIPE, stderr=subprocess.PIPE)

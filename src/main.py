@@ -20,7 +20,5 @@ if __name__ == '__main__':
 
     logging.info('Shutting down Qtendo')
 
-    ###
-
     logging.info('Bye')
     sys.exit(return_code)
