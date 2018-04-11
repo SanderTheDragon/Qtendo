@@ -9,7 +9,8 @@ set (UI_FILES
     "${UI_ROOT}/window.ui"
     "${UI_ROOT}/emulator.ui"
     "${UI_ROOT}/settings.ui"
-    "${UI_ROOT}/about.ui")
+    "${UI_ROOT}/about.ui"
+    "${UI_ROOT}/emulator_settings.ui")
 
 find_program (PYUIC5 pyuic5)
 add_custom_target (ui SOURCES ${UI_FILES})
@@ -68,6 +69,7 @@ set (PY_FILES ${PY_FILES}
     "${PY_ROOT}/emulators/mupen64plus.py"
     "${PY_ROOT}/emulators/dolphin.py"
     "${PY_ROOT}/emulators/citra.py"
+    "${PY_ROOT}/emulators/emulator_settings_dialog.py"
     "${PY_ROOT}/roms/__init__.py"
     "${PY_ROOT}/roms/rom.py"
     "${PY_ROOT}/roms/nes.py"

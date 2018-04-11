@@ -1,5 +1,6 @@
 import logging
 import os
+import shlex
 import subprocess
 from PyQt5 import QtCore
 from PyQt5.QtCore import QSize, QSettings, QDir
@@ -8,6 +9,7 @@ from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtWidgets import QWidget, QLabel, QTableWidgetItem
 from threading import Thread
 
+from . import emulator_settings_dialog
 from .. import utils
 from ..roms import rom
 from ui import ui_emulator
@@ -24,6 +26,7 @@ class Emulator(QWidget, ui_emulator.Ui_Emulator):
         self.roms = []
 
         self.settings = QSettings('SanderTheDragon', 'Qtendo')
+        self.settings_prefix = 'emulation/emulator/' + self.data['name'].lower().replace(' ', '_')
 
         name = self.nameLabel.text()
         name = name.replace('{NAME}', self.data['name'])
@@ -62,6 +65,7 @@ class Emulator(QWidget, ui_emulator.Ui_Emulator):
 
         self.gameList.cellDoubleClicked.connect(lambda row, column: self.launch_game(self.gameList.item(row, 4).text()))
         self.refreshButton.pressed.connect(lambda: ( self.reset_list(), Thread(target=self.find_games, daemon=True).start() ))
+        self.settingsButton.pressed.connect(lambda: emulator_settings_dialog.EmulatorSettingsDialog(parent=self, data=self.data).exec_())
 
     def find_games(self):
         file_types = [ ]
@@ -123,4 +127,10 @@ class Emulator(QWidget, ui_emulator.Ui_Emulator):
         self.refreshButton.setEnabled(True)
 
     def launch_game(self, path):
-        self.processes['path'] = subprocess.Popen([ self.data['path'] ] + self.data['arguments'] + [ path ], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        command = self.settings.value(self.settings_prefix + '/command', '{EXEC} {ARGS} {ROM}', type=str)
+        command = command.replace('{EXEC}', self.data['path'])
+        command = command.replace('{ARGS}', ' '.join(self.data['arguments']))
+        command = command.replace('{ROM}', shlex.quote(path))
+        logging.info('[' + self.data['name'] + '] Launching: `' + command + '`')
+
+        self.processes['path'] = subprocess.Popen(shlex.split(command), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
