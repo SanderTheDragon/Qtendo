@@ -18,17 +18,20 @@ def find():
         'widget': EmulatorZsnes,
         'platforms': { 'Super Nintendo Entertainment System': [ '.sfc', '.smc' ] },
         'site': 'http://zsnes.com/',
-        'arguments': [ '-m' ]
+        'arguments': [ '-m' ],
+        'get_version': get_version
     }
 
     if len(path) > 0:
         data['path'] = path
-
-        #Not the best way to get the version
-        version = utils.execute(path, '-m')
-        data['version'] = version.split(' ')[1][:-1]
+        data['version'] = get_version(path)
     else:
         data['path'] = ''
         data['version'] = 'Not Found'
 
     return data
+
+def get_version(path):
+    #Not the best way to get the version
+    version = utils.execute(path, '-m')
+    return version.split(' ')[1][:-1]

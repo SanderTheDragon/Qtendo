@@ -18,16 +18,19 @@ def find():
         'widget': EmulatorFceux,
         'platforms': { 'Nintendo Entertainment System': [ '.nes', '.unf', '.unif' ], 'Famicom Disk System': [ '.fds', '.unf', '.unif' ] },
         'site': 'http://www.fceux.com/web/home.html',
-        'arguments': [ '--nogui', '1', '--noframe', '0' ]
+        'arguments': [ '--nogui', '1', '--noframe', '0' ],
+        'get_version': get_version
     }
 
     if not path is None and len(path) > 0:
         data['path'] = path
-
-        #No way to get version without opening a window
-        data['version'] = ''
+        data['version'] = get_version(path)
     else:
         data['path'] = ''
         data['version'] = 'Not Found'
 
     return data
+
+def get_version(path):
+    #No way to get version without opening a window
+    return ''

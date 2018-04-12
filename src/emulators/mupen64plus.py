@@ -18,22 +18,25 @@ def find():
         'widget': EmulatorMupen64Plus,
         'platforms': { 'Nintendo 64': [ '.n64', '.z64', '.v64' ] },
         'site': 'http://mupen64plus.org/',
-        'arguments': [ ]
+        'arguments': [ ],
+        'get_version': get_version
     }
 
     if not path is None and len(path) > 0:
         data['path'] = path
-
-        version = utils.execute(path, '--version')
-        version_line = ''
-        for line in version.split('\n'):
-            if 'Version' in line:
-                version_line = line
-                break
-
-        data['version'] = version_line.split(' ')[-1]
+        data['version'] = get_version(path)
     else:
         data['path'] = ''
         data['version'] = 'Not Found'
 
     return data
+
+def get_version(path):
+    version = utils.execute(path, '--version')
+    version_line = ''
+    for line in version.split('\n'):
+        if 'Version' in line:
+            version_line = line
+            break
+
+    return version_line.split(' ')[-1]

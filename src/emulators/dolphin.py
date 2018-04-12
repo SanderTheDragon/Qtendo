@@ -18,16 +18,19 @@ def find():
         'widget': EmulatorDolphin,
         'platforms': { 'Gamecube': [ '.gcm', '.iso', '.gcz' ], 'Wii': [ '.iso', '.gcz', '.ciso', '.wbfs' ] },
         'site': 'https://dolphin-emu.org/',
-        'arguments': [ ]
+        'arguments': [ ],
+        'get_version': get_version
     }
 
     if not path is None and len(path) > 0:
         data['path'] = path
-
-        version = utils.execute(path, '--version')
-        data['version'] = ' '.join(version.split(' ')[1:])
+        data['version'] = get_version(path)
     else:
         data['path'] = ''
         data['version'] = 'Not Found'
 
     return data
+
+def get_version(path):
+    version = utils.execute(path, '--version')
+    return ' '.join(version.split(' ')[1:])

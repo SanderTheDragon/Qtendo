@@ -27,10 +27,22 @@ class Emulator(QWidget, ui_emulator.Ui_Emulator):
 
         self.settings = QSettings('SanderTheDragon', 'Qtendo')
         self.settings_prefix = 'emulation/emulator/' + self.data['name'].lower().replace(' ', '_')
+        self.settings_dialog = emulator_settings_dialog.EmulatorSettingsDialog(parent=self, data=self.data)
+        self.settings_dialog.accepted.connect(lambda: self.reload_settings())
+        self.settings_dialog.setWindowTitle(self.data['name'] + ' Settings')
+
+        self.pathLabel.setText(self.settings.value(self.settings_prefix + '/path', self.data['path'], type=str))
 
         name = self.nameLabel.text()
         name = name.replace('{NAME}', self.data['name'])
-        name = name.replace('{VERSION}', self.data['version'])
+
+        version = self.data['version']
+        if version == 'Not Found' and len(self.pathLabel.text()) > 0:
+            version_ = self.data['get_version'](self.pathLabel.text())
+            if len(version) > 0:
+                version = version_
+        name = name.replace('{VERSION}', version)
+
         name = name.replace('{URL}', self.data['site'])
         self.nameLabel.setText(name)
 
@@ -43,8 +55,6 @@ class Emulator(QWidget, ui_emulator.Ui_Emulator):
             self.iconLabel = QLabel()
             self.iconLabel.setPixmap(QPixmap(':' + self.data['icon']).scaled(24, 24))
             self.gridLayout.addWidget(self.iconLabel, 0, 0)
-
-        self.pathLabel.setText(self.data['path'])
 
         platformText = ''
         for platform in self.data['platforms'].keys():
@@ -65,7 +75,7 @@ class Emulator(QWidget, ui_emulator.Ui_Emulator):
 
         self.gameList.cellDoubleClicked.connect(lambda row, column: self.launch_game(self.gameList.item(row, 4).text()))
         self.refreshButton.pressed.connect(lambda: ( self.reset_list(), Thread(target=self.find_games, daemon=True).start() ))
-        self.settingsButton.pressed.connect(lambda: emulator_settings_dialog.EmulatorSettingsDialog(parent=self, data=self.data).exec_())
+        self.settingsButton.pressed.connect(lambda: ( self.settings_dialog.exec_() ))
 
     def find_games(self):
         file_types = [ ]
@@ -128,9 +138,20 @@ class Emulator(QWidget, ui_emulator.Ui_Emulator):
 
     def launch_game(self, path):
         command = self.settings.value(self.settings_prefix + '/command', '{EXEC} {ARGS} {ROM}', type=str)
-        command = command.replace('{EXEC}', self.data['path'])
+        command = command.replace('{EXEC}', self.settings.value(self.settings_prefix + '/path', self.data['path'], type=str))
         command = command.replace('{ARGS}', ' '.join(self.data['arguments']))
         command = command.replace('{ROM}', shlex.quote(path))
         logging.info('[' + self.data['name'] + '] Launching: `' + command + '`')
 
         self.processes['path'] = subprocess.Popen(shlex.split(command), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    def reload_settings(self):
+        self.pathLabel.setText(self.settings.value(self.settings_prefix + '/path', self.data['path'], type=str))
+
+        name = self.nameLabel.text()
+        version = self.data['get_version'](self.pathLabel.text())
+        if len(version) > 0:
+            name = name.replace(self.data['version'], version)
+        self.nameLabel.setText(name)
+
+        self.data['reload_settings']()

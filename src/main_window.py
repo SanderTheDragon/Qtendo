@@ -123,8 +123,10 @@ class MainWindow(QMainWindow, ui_window.Ui_Window):
         self.toolBarEmulation.addAction(emulator['action'])
         self.stackedWidgetEmulation.insertWidget(i, emulator['widget'](emulator))
 
-        if len(emulator['path']) == 0:
+        if len(self.settings.value('emulation/emulator/' + emulator['name'].lower().replace(' ', '_') + '/path', emulator['path'], type=str)) == 0:
             self.toolBarEmulation.widgetForAction(emulator['action']).setStyleSheet('color: ' + QApplication.palette().color(QPalette.Disabled, QPalette.WindowText).name() + ';')
+
+        emulator['reload_settings'] = self.reload_settings
 
         self.taskProgress.setVal(int((100.0 / float(emulator_count)) * float(i + 1)))
 
@@ -132,3 +134,11 @@ class MainWindow(QMainWindow, ui_window.Ui_Window):
         self.statusBar.clearMessage()
         self.taskProgress.setValue(0)
         self.taskProgress.setVisible(False)
+
+    def reload_settings(self):
+        emulator = self.emulators[list(self.emulators.keys())[self.stackedWidgetEmulation.currentIndex()]]
+
+        if len(self.settings.value('emulation/emulator/' + emulator['name'].lower().replace(' ', '_') + '/path', emulator['path'], type=str)) == 0:
+            self.toolBarEmulation.widgetForAction(emulator['action']).setStyleSheet('color: ' + QApplication.palette().color(QPalette.Disabled, QPalette.WindowText).name() + ';')
+        else:
+            self.toolBarEmulation.widgetForAction(emulator['action']).setStyleSheet('')
