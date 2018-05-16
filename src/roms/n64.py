@@ -2,10 +2,12 @@ import collections
 import struct
 
 Header = collections.namedtuple('Header', 'image_name media_format cartridge_id country_code version')
+
 def get_header(path):
     with open(path, 'rb') as stream:
         stream.seek(0x20)
         return Header(*struct.unpack('>20s4x4s2sBB', stream.read(32)))
+
 
 def verify(path):
     #Media format and country are probably good enough
@@ -17,8 +19,10 @@ def verify(path):
 
     return False
 
+
 def get_region_name(region):
     return { '7': 'Beta', 'A': 'Asia', 'B': 'Brazil', 'C': 'China', 'D': 'Germany', 'E': 'United States', 'F': 'France', 'G': 'Gateway 64', 'H': 'The Netherlands', 'I': 'Italy', 'J': 'Japan', 'K': 'Korea', 'L': 'Gateway 64', 'N': 'Canada', 'P': 'Europe', 'S': 'Spain', 'U': 'Australia', 'W': 'Scandinavia', 'Y': 'Europe', 'Y': 'Europe' }[region.decode('utf-8')]
+
 
 def get_info(path):
     header = get_header(path)

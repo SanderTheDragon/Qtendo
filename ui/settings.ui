@@ -113,7 +113,8 @@
              <string>Add</string>
             </property>
             <property name="icon">
-             <iconset theme="list-add"/>
+             <iconset theme="list-add">
+              <normaloff>.</normaloff>.</iconset>
             </property>
            </widget>
           </item>
@@ -126,7 +127,8 @@
              <string>Remove</string>
             </property>
             <property name="icon">
-             <iconset theme="delete"/>
+             <iconset theme="delete">
+              <normaloff>.</normaloff>.</iconset>
             </property>
            </widget>
           </item>

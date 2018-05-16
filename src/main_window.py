@@ -1,13 +1,13 @@
 import logging
 from PyQt5 import QtCore
-from PyQt5.QtCore import QCoreApplication, Qt, QSize, QSettings, QByteArray
-from PyQt5.QtGui import QPalette, QIcon
-from PyQt5.QtWidgets import QApplication, QMainWindow, QToolBar, QAction, QProgressBar
+from PyQt5.QtCore import QByteArray, QCoreApplication, QSettings, QSize, Qt
+from PyQt5.QtGui import QIcon, QPalette
+from PyQt5.QtWidgets import QAction, QApplication, QMainWindow, QProgressBar, QToolBar
 from threading import Thread
 
 from res import icons
-from src import settings_dialog, about_dialog
-from src.emulators import fceux, zsnes, mupen64plus, dolphin, citra
+from src.dialogs import about, settings
+from src.emulators import citra, dolphin, fceux, mupen64plus, zsnes
 from ui import ui_window
 
 emulator_count = 5
@@ -19,24 +19,32 @@ class MainWindow(QMainWindow, ui_window.Ui_Window):
     def __init__(self):
         super(MainWindow, self).__init__()
         self.setupUi(self)
-        self.emulators = {}
+
+        self.emulators = { }
 
         self.settings = QSettings('SanderTheDragon', 'Qtendo')
-        if self.settings.value('qtendo/window/restore', True, type=bool):
-            self.restoreGeometry(self.settings.value('qtendo/window/geometry', type=QByteArray))
 
-        #Menu actions
-        self.actionQuit.triggered.connect(QCoreApplication.quit)
-        self.actionSettings.triggered.connect(lambda: settings_dialog.SettingsDialog(parent=self).exec_())
-        self.actionAbout.triggered.connect(lambda: about_dialog.AboutDialog(parent=self).exec_())
+        self.ui_create()
+        self.ui_connect()
+        self.settings_load()
 
-        #Toolbar actions
-        self.actionPageEmulation.triggered.connect(lambda: self.stackedWidget.setCurrentIndex(0))
 
-        #Other signals
-        self.emulator_found.connect(self.add_emulator)
-        self.emulators_loaded.connect(self.reset_status)
 
+    def showEvent(self, ev):
+        QMainWindow.showEvent(self, ev)
+
+        self.statusBar.showMsg('Searching for emulators', 1000)
+        Thread(target=self.find_emulators, daemon=True).start()
+
+
+    def closeEvent(self, ev):
+        QMainWindow.closeEvent(self, ev)
+
+        self.settings_save()
+
+
+
+    def ui_create(self):
         #Add toolbar
         self.toolBar = QToolBar()
         self.toolBar.addAction(self.actionPageEmulation)
@@ -65,16 +73,31 @@ class MainWindow(QMainWindow, ui_window.Ui_Window):
         #Styling
         self.setStyleSheet('QToolButton { padding-right: -3px; }')
 
-    def showEvent(self, ev):
-        QMainWindow.showEvent(self, ev)
-        self.statusBar.showMsg('Searching for emulators', 1000)
-        Thread(target=self.find_emulators, daemon=True).start()
 
-    def closeEvent(self, ev):
-        QMainWindow.closeEvent(self, ev)
+    def ui_connect(self):
+        #Menu actions
+        self.actionQuit.triggered.connect(QCoreApplication.quit)
+        self.actionSettings.triggered.connect(lambda: settings.SettingsDialog(parent=self).exec_())
+        self.actionAbout.triggered.connect(lambda: about.AboutDialog(parent=self).exec_())
 
+        #Toolbar actions
+        self.actionPageEmulation.triggered.connect(lambda: self.stackedWidget.setCurrentIndex(0))
+
+        #Other signals
+        self.emulator_found.connect(self.add_emulator)
+        self.emulators_loaded.connect(self.reset_status)
+
+
+    def settings_load(self):
+        if self.settings.value('qtendo/window/restore', True, type=bool):
+            self.restoreGeometry(self.settings.value('qtendo/window/geometry', type=QByteArray))
+
+
+    def settings_save(self):
         if self.settings.value('qtendo/window/restore', True, type=bool):
             self.settings.setValue('qtendo/window/geometry', self.saveGeometry())
+
+
 
     def change_emulator(self, index):
         current = self.stackedWidgetEmulation.currentIndex()
@@ -87,19 +110,6 @@ class MainWindow(QMainWindow, ui_window.Ui_Window):
             emulator = self.emulators[list(self.emulators.keys())[index]]
             emulator['action'].setIcon(QIcon(':' + emulator['icon']))
 
-    def find_emulators(self):
-        #Search for FCEUX
-        self.emulator_found.emit(fceux.find())
-        #Search for ZSNES
-        self.emulator_found.emit(zsnes.find())
-        #Search for Mupen64Plus
-        self.emulator_found.emit(mupen64plus.find())
-        #Search for Dolphin Emulator
-        self.emulator_found.emit(dolphin.find())
-        #Search for Citra
-        self.emulator_found.emit(citra.find())
-
-        self.emulators_loaded.emit()
 
     def add_emulator(self, emulator):
         if len(emulator['path']) > 0:
@@ -130,10 +140,12 @@ class MainWindow(QMainWindow, ui_window.Ui_Window):
 
         self.taskProgress.setVal(int((100.0 / float(emulator_count)) * float(i + 1)))
 
+
     def reset_status(self):
         self.statusBar.clearMessage()
         self.taskProgress.setValue(0)
         self.taskProgress.setVisible(False)
+
 
     def reload_settings(self):
         emulator = self.emulators[list(self.emulators.keys())[self.stackedWidgetEmulation.currentIndex()]]
@@ -142,3 +154,19 @@ class MainWindow(QMainWindow, ui_window.Ui_Window):
             self.toolBarEmulation.widgetForAction(emulator['action']).setStyleSheet('color: ' + QApplication.palette().color(QPalette.Disabled, QPalette.WindowText).name() + ';')
         else:
             self.toolBarEmulation.widgetForAction(emulator['action']).setStyleSheet('')
+
+
+
+    def find_emulators(self):
+        #Search for FCEUX
+        self.emulator_found.emit(fceux.find())
+        #Search for ZSNES
+        self.emulator_found.emit(zsnes.find())
+        #Search for Mupen64Plus
+        self.emulator_found.emit(mupen64plus.find())
+        #Search for Dolphin Emulator
+        self.emulator_found.emit(dolphin.find())
+        #Search for Citra
+        self.emulator_found.emit(citra.find())
+
+        self.emulators_loaded.emit()

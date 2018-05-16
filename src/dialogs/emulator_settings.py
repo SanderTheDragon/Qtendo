@@ -23,6 +23,7 @@ class EmulatorSettingsDialog(QDialog, ui_emulator_settings.Ui_EmulatorSettings):
         self.commandFormat.textChanged.connect(lambda: self.show_preview())
         self.commandFormat.setText(self.settings.value(self.settings_prefix + '/command', '{EXEC} {ARGS} {ROM}', type=str))
 
+
     def show_preview(self):
         command = self.commandFormat.text()
         exec_path = self.settings.value(self.settings_prefix + '/path', self.data['path'], type=str)
@@ -36,8 +37,10 @@ class EmulatorSettingsDialog(QDialog, ui_emulator_settings.Ui_EmulatorSettings):
         command = command.replace('{ROM}', '/rom' + self.data['platforms'][list(self.data['platforms'].keys())[0]][0])
         self.commandFormatPreview.setText(command)
 
+
     def check_path(self):
         self.pathEdit.setStyleSheet('color: ' + ('green' if os.path.isfile(self.pathEdit.text()) else 'red') + ';')
+
 
     def save(self):
         self.settings.setValue(self.settings_prefix + '/command', self.commandFormat.text())

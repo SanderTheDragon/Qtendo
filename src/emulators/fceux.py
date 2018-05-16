@@ -31,6 +31,7 @@ def find():
 
     return data
 
+
 def get_version(path):
     #No way to get version without opening a window
     return ''

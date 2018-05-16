@@ -4,6 +4,7 @@ import os
 import struct
 
 Header = collections.namedtuple('Header', 'game_title rom_makeup rom_type rom_size ram_size country_code creator_license_id version_number checksum_complement checksum')
+
 def get_header(path):
     #Because smc
     file_size = os.path.getsize(path)
@@ -30,8 +31,10 @@ def get_header(path):
 
     return None
 
+
 def verify(path):
     return not get_header(path) is None
+
 
 def get_id(path):
     with open(path, 'rb') as stream:
@@ -46,6 +49,7 @@ def get_id(path):
 
         return '%08X' % ( crc & 0xffffffff, )
 
+
 def get_region(header):
     countries = [ 'Japan', 'United States', 'Europe', 'Sweden', 'Finland', 'Denmark', 'France', 'The Netherlands', 'Spain', 'Germany', 'Italy', 'China', 'Korea' ]
     if header.country_code >= len(countries):
@@ -57,6 +61,7 @@ def get_region(header):
         video = 'NTSC'
 
     return ( video, country )
+
 
 def get_info(path):
     ( type, header ) = get_header(path)

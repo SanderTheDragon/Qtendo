@@ -5,6 +5,7 @@ import struct
 Type = collections.namedtuple('Type', 'magic_id')
 NCCHHeader = collections.namedtuple('NCCHHeader', 'magic_id content_size partition_id maker_code version program_id product_code extended_header_size flags region_offset region_size exefs_offset exefs_size exefs_hash_size romfs_offset romfs_size romfs_hash_size')
 NCSDHeader = collections.namedtuple('NCSDHeader', 'magic_id content_size media_id fs_type crypt_type offset')
+
 def get_header(path):
     with open(path, 'rb') as stream:
         stream.seek(0x0100)
@@ -18,8 +19,10 @@ def get_header(path):
         else:
             return rom_type
 
+
 def verify(path):
     return get_header(path).magic_id.decode('utf-8').startswith('NC')
+
 
 def get_info(path):
     header = get_header(path)

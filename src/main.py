@@ -4,10 +4,26 @@ import logging
 import sys
 from PyQt5.QtWidgets import QApplication
 
-from src import main_window, utils
+from src import main_window
+
+
+def setup_logging():
+    formatter = '[%(asctime)s %(filename)s %(levelname)s] %(message)s'
+    log_level = logging.DEBUG
+
+    #Log to file
+    logging.basicConfig(filename='qtendo.log', filemode='w', format=formatter, level=log_level)
+
+    #Also log to terminal
+    terminal_logging = logging.StreamHandler()
+    terminal_logging.setLevel(log_level)
+    terminal_logging.setFormatter(logging.Formatter(formatter))
+    logging.getLogger().addHandler(terminal_logging)
+
+
 
 if __name__ == '__main__':
-    utils.setup_logging()
+    setup_logging()
 
     logging.info('Starting Qtendo')
 

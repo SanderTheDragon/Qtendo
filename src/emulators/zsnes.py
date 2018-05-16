@@ -31,6 +31,7 @@ def find():
 
     return data
 
+
 def get_version(path):
     #Not the best way to get the version
     version = utils.execute(path, '-m')

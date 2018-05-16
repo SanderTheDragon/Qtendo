@@ -6,11 +6,11 @@ project (Qtendo)
 #Compile .ui files
 set (UI_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/ui")
 set (UI_FILES
-    "${UI_ROOT}/window.ui"
-    "${UI_ROOT}/emulator.ui"
-    "${UI_ROOT}/settings.ui"
     "${UI_ROOT}/about.ui"
-    "${UI_ROOT}/emulator_settings.ui")
+    "${UI_ROOT}/emulator.ui"
+    "${UI_ROOT}/emulator_settings.ui"
+    "${UI_ROOT}/settings.ui"
+    "${UI_ROOT}/window.ui")
 
 find_program (PYUIC5 pyuic5)
 add_custom_target (ui SOURCES ${UI_FILES})
@@ -57,28 +57,31 @@ set (PY_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/src")
 set (PY_MAIN "${PY_ROOT}/main.py")
 set (PY_FILES ${PY_FILES}
     "${PY_ROOT}/__init__.py"
-    "${PY_ROOT}/utils.py"
     "${PY_ROOT}/main_window.py"
-    "${PY_ROOT}/settings_dialog.py"
     "${PY_ROOT}/system.py"
-    "${PY_ROOT}/about_dialog.py"
+    "${PY_ROOT}/utils.py"
+
+    "${PY_ROOT}/dialogs/about.py"
+    "${PY_ROOT}/dialogs/emulator_settings.py"
+    "${PY_ROOT}/dialogs/settings.py"
+
     "${PY_ROOT}/emulators/__init__.py"
+    "${PY_ROOT}/emulators/citra.py"
+    "${PY_ROOT}/emulators/dolphin.py"
     "${PY_ROOT}/emulators/emulator.py"
     "${PY_ROOT}/emulators/fceux.py"
-    "${PY_ROOT}/emulators/zsnes.py"
     "${PY_ROOT}/emulators/mupen64plus.py"
-    "${PY_ROOT}/emulators/dolphin.py"
-    "${PY_ROOT}/emulators/citra.py"
-    "${PY_ROOT}/emulators/emulator_settings_dialog.py"
+    "${PY_ROOT}/emulators/zsnes.py"
+
     "${PY_ROOT}/roms/__init__.py"
-    "${PY_ROOT}/roms/rom.py"
-    "${PY_ROOT}/roms/nes.py"
+    "${PY_ROOT}/roms/3ds.py"
     "${PY_ROOT}/roms/fds.py"
-    "${PY_ROOT}/roms/snes.py"
-    "${PY_ROOT}/roms/n64.py"
     "${PY_ROOT}/roms/gamecube.py"
-    "${PY_ROOT}/roms/wii.py"
-    "${PY_ROOT}/roms/3ds.py")
+    "${PY_ROOT}/roms/n64.py"
+    "${PY_ROOT}/roms/nes.py"
+    "${PY_ROOT}/roms/rom.py"
+    "${PY_ROOT}/roms/snes.py"
+    "${PY_ROOT}/roms/wii.py")
 
 foreach (PY_FILE ${PY_FILES})
     string (REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/" "" TARGET_FILE ${PY_FILE})

@@ -2,19 +2,6 @@ import logging
 import os
 import subprocess
 
-def setup_logging():
-    formatter = '[%(asctime)s %(filename)s %(levelname)s] %(message)s'
-    log_level = logging.DEBUG
-
-    #Log to file
-    logging.basicConfig(filename='qtendo.log', filemode='w', format=formatter, level=log_level)
-
-    #Also log to terminal
-    terminal_logging = logging.StreamHandler()
-    terminal_logging.setLevel(log_level)
-    terminal_logging.setFormatter(logging.Formatter(formatter))
-    logging.getLogger().addHandler(terminal_logging)
-
 def find_executable(name):
     paths = [
         #Standard paths
@@ -32,14 +19,6 @@ def find_executable(name):
         if os.path.isfile(filepath):
             return filepath
 
-def execute(path, args):
-    arguments = []
-    if type(args) == str:
-        arguments = args.split(' ')
-    elif type(args) == list:
-        arguments = args
-
-    return subprocess.run([ path ] + arguments, stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout.decode('utf-8').strip()
 
 def find_files(root, filters):
     if type(filters) == str:
@@ -52,6 +31,19 @@ def find_files(root, filters):
                 file_list.append(os.path.join(root_, file))
 
     return file_list
+
+
+
+def execute(path, args):
+    arguments = []
+    if type(args) == str:
+        arguments = args.split(' ')
+    elif type(args) == list:
+        arguments = args
+
+    return subprocess.run([ path ] + arguments, stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout.decode('utf-8').strip()
+
+
 
 def get_short_platform_name(name):
     if ' ' in name:

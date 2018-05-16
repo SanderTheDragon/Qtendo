@@ -3,10 +3,10 @@ import os
 import shlex
 import subprocess
 from PyQt5 import QtCore
-from PyQt5.QtCore import QSize, QSettings, QDir
+from PyQt5.QtCore import QDir, QSettings, QSize, Qt
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtSvg import QSvgWidget
-from PyQt5.QtWidgets import QWidget, QLabel, QTableWidgetItem
+from PyQt5.QtWidgets import QLabel, QMenu, QTableWidgetItem, QWidget
 from threading import Thread
 
 from . import emulator_settings_dialog
@@ -35,15 +35,16 @@ class Emulator(QWidget, ui_emulator.Ui_Emulator):
 
         name = self.nameLabel.text()
         name = name.replace('{NAME}', self.data['name'])
+        name = name.replace('{URL}', self.data['site'])
 
         version = self.data['version']
         if version == 'Not Found' and len(self.pathLabel.text()) > 0:
             version_ = self.data['get_version'](self.pathLabel.text())
             if len(version) > 0:
                 version = version_
-        name = name.replace('{VERSION}', version)
+        self.version_pos = name.find('{VERSION}')
+        name = name[:self.version_pos] + version
 
-        name = name.replace('{URL}', self.data['site'])
         self.nameLabel.setText(name)
 
         if self.data['icon'].endswith('.svg'):
@@ -69,13 +70,18 @@ class Emulator(QWidget, ui_emulator.Ui_Emulator):
         self.gameList.insertColumn(4)
         self.gameList.setHorizontalHeaderLabels([ 'Platform', 'ID', 'Title', 'Region', 'Path' ])
 
+        self.gameList.setContextMenuPolicy(Qt.CustomContextMenu)
+
         self.game_found.connect(self.add_game)
         self.games_loaded.connect(self.done_loading)
         Thread(target=self.find_games, daemon=True).start()
 
+        self.gameList.customContextMenuRequested.connect(lambda position: self.game_list_context_menu(position))
         self.gameList.cellDoubleClicked.connect(lambda row, column: self.launch_game(self.gameList.item(row, 4).text()))
         self.refreshButton.pressed.connect(lambda: ( self.reset_list(), Thread(target=self.find_games, daemon=True).start() ))
         self.settingsButton.pressed.connect(lambda: ( self.settings_dialog.exec_() ))
+
+
 
     def find_games(self):
         file_types = [ ]
@@ -108,6 +114,7 @@ class Emulator(QWidget, ui_emulator.Ui_Emulator):
         logging.debug('[' + self.data['name'] + '] Found ' + str(games_length) + ' ROM' + ('s' if games_length != 1 else ''))
         self.games_loaded.emit()
 
+
     def add_game(self, index, info, path, count):
         self.gameList.insertRow(index)
 
@@ -122,6 +129,8 @@ class Emulator(QWidget, ui_emulator.Ui_Emulator):
 
         self.progressBar.setValue(int(100.0 / float(count) * float(index + 1)))
 
+
+
     def reset_list(self):
         self.refreshButton.setEnabled(False)
         self.progressBar.setValue(0)
@@ -130,11 +139,13 @@ class Emulator(QWidget, ui_emulator.Ui_Emulator):
         self.gameList.setRowCount(0)
         self.roms.clear()
 
+
     def done_loading(self):
         self.gameList.setSortingEnabled(True)
         self.gameList.sortItems(1)
         self.progressBar.setVisible(False)
         self.refreshButton.setEnabled(True)
+
 
     def launch_game(self, path):
         command = self.settings.value(self.settings_prefix + '/command', '{EXEC} {ARGS} {ROM}', type=str)
@@ -145,13 +156,25 @@ class Emulator(QWidget, ui_emulator.Ui_Emulator):
 
         self.processes['path'] = subprocess.Popen(shlex.split(command), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
+
     def reload_settings(self):
         self.pathLabel.setText(self.settings.value(self.settings_prefix + '/path', self.data['path'], type=str))
 
         name = self.nameLabel.text()
         version = self.data['get_version'](self.pathLabel.text())
         if len(version) > 0:
-            name = name.replace(self.data['version'], version)
+            name = name[:self.version_pos] + version
         self.nameLabel.setText(name)
 
         self.data['reload_settings']()
+
+
+    def game_list_context_menu(self, position):
+        menu = QMenu()
+        launchAction = menu.addAction("Launch")
+        menu.addSeparator()
+
+        action = menu.exec_(self.gameList.mapToGlobal(position))
+
+        if action == launchAction:
+             self.launch_game(self.gameList.item(self.gameList.selectionModel().selectedRows()[0].row(), 4).text())
