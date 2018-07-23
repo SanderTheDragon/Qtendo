@@ -8,6 +8,7 @@ set (UI_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/ui")
 set (UI_FILES
     "${UI_ROOT}/about.ui"
     "${UI_ROOT}/emulator.ui"
+    "${UI_ROOT}/emulator_download.ui"
     "${UI_ROOT}/emulator_settings.ui"
     "${UI_ROOT}/settings.ui"
     "${UI_ROOT}/window.ui")
@@ -58,6 +59,7 @@ set (PY_MAIN "${PY_ROOT}/main.py")
 set (PY_FILES ${PY_FILES}
     "${PY_ROOT}/__init__.py"
     "${PY_ROOT}/main_window.py"
+    "${PY_ROOT}/syntax.py"
     "${PY_ROOT}/system.py"
     "${PY_ROOT}/utils.py"
 

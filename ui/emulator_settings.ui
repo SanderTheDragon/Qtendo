@@ -128,6 +128,47 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="tabVideo">
+      <attribute name="title">
+       <string>Video</string>
+      </attribute>
+     </widget>
+     <widget class="QWidget" name="tabAudio">
+      <attribute name="title">
+       <string>Audio</string>
+      </attribute>
+     </widget>
+     <widget class="QWidget" name="tabInput">
+      <attribute name="title">
+       <string>Input</string>
+      </attribute>
+     </widget>
+     <widget class="QWidget" name="tabEdit">
+      <attribute name="title">
+       <string>File Edit</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_4">
+       <item row="1" column="0">
+        <widget class="QComboBox" name="fileSelect"/>
+       </item>
+       <item row="1" column="1">
+        <widget class="QPushButton" name="fileSaveButton">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Save</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0" colspan="2">
+        <widget class="QTextEdit" name="fileTextEdit"/>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
   </layout>

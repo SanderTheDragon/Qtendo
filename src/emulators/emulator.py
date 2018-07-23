@@ -9,8 +9,8 @@ from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtWidgets import QLabel, QMenu, QTableWidgetItem, QWidget
 from threading import Thread
 
-from . import emulator_settings_dialog
 from .. import utils
+from ..dialogs import emulator_settings
 from ..roms import rom
 from ui import ui_emulator
 
@@ -27,10 +27,21 @@ class Emulator(QWidget, ui_emulator.Ui_Emulator):
 
         self.settings = QSettings('SanderTheDragon', 'Qtendo')
         self.settings_prefix = 'emulation/emulator/' + self.data['name'].lower().replace(' ', '_')
-        self.settings_dialog = emulator_settings_dialog.EmulatorSettingsDialog(parent=self, data=self.data)
+
+        self.config_files = self.get_config_files()
+
+        self.settings_dialog = emulator_settings.EmulatorSettingsDialog(parent=self, data=self.data)
         self.settings_dialog.accepted.connect(lambda: self.reload_settings())
         self.settings_dialog.setWindowTitle(self.data['name'] + ' Settings')
 
+        self.ui_create()
+        self.ui_connect()
+
+        Thread(target=self.find_games, daemon=True).start()
+
+
+
+    def ui_create(self):
         self.pathLabel.setText(self.settings.value(self.settings_prefix + '/path', self.data['path'], type=str))
 
         name = self.nameLabel.text()
@@ -72,9 +83,10 @@ class Emulator(QWidget, ui_emulator.Ui_Emulator):
 
         self.gameList.setContextMenuPolicy(Qt.CustomContextMenu)
 
+
+    def ui_connect(self):
         self.game_found.connect(self.add_game)
         self.games_loaded.connect(self.done_loading)
-        Thread(target=self.find_games, daemon=True).start()
 
         self.gameList.customContextMenuRequested.connect(lambda position: self.game_list_context_menu(position))
         self.gameList.cellDoubleClicked.connect(lambda row, column: self.launch_game(self.gameList.item(row, 4).text()))
@@ -128,7 +140,6 @@ class Emulator(QWidget, ui_emulator.Ui_Emulator):
         self.gameList.resizeColumnsToContents()
 
         self.progressBar.setValue(int(100.0 / float(count) * float(index + 1)))
-
 
 
     def reset_list(self):

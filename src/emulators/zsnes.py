@@ -1,3 +1,4 @@
+import os
 from PyQt5.QtWidgets import QWidget
 
 from .. import utils
@@ -6,6 +7,25 @@ from . import emulator
 class EmulatorZsnes(emulator.Emulator):
     def __init__(self, data):
         emulator.Emulator.__init__(self, data)
+
+
+    def create_settings_ui(self, ui):
+        ui.fileSelect.addItems(self.get_config_files())
+        ui.change_file(ui.fileSelect.currentText())
+
+
+
+    def get_config_files(self):
+        if os.name == 'nt': #Windows
+            config_dir = os.path.dirname(self.data['path']) + '\\'
+        else:
+            config_dir = os.path.expanduser("~") + '/.zsnes/'
+
+        return [ config_dir + 'zinput.cfg', config_dir + 'zmovie.cfg', config_dir + ('zsnesw.cfg' if os.name == 'nt' else 'zsnesl.cfg') ]
+
+
+    def get_config_format(self):
+        return 'ini' #Not actual INI, but good enough for formatting
 
 
 

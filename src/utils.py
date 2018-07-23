@@ -1,6 +1,7 @@
 import logging
 import os
 import subprocess
+from PyQt5.QtGui import QColor, QFont, QTextCharFormat
 
 def find_executable(name):
     paths = [
@@ -58,3 +59,22 @@ def get_short_platform_name(name):
         return short_name
     else:
         return name.lower()
+
+
+
+def char_format(color, style=[]):
+    q_color = QColor()
+    if type(color) == str:
+        q_color.setNamedColor(color)
+    elif type(color) == tuple:
+        q_color.setRgb(*color)
+
+    q_format = QTextCharFormat()
+    q_format.setForeground(q_color)
+
+    if 'bold' in style:
+        q_format.setFontWeight(QFont.Bold)
+    if 'italic' in style:
+        q_format.setFontItalic(True)
+
+    return q_format
