@@ -2,6 +2,7 @@ import logging
 import os
 import shlex
 import subprocess
+import traceback
 from PyQt5 import QtCore
 from PyQt5.QtCore import QDir, QSettings, QSize, Qt
 from PyQt5.QtGui import QPixmap
@@ -113,15 +114,18 @@ class Emulator(QWidget, ui_emulator.Ui_Emulator):
             for game in possible_games:
                 index = self.gameList.rowCount()
 
-                rom_ = rom.Rom(game, self.data['platforms'])
-                if rom_.is_rom:
-                    logging.debug('[' + self.data['name'] + '] \'' + game + '\' is a valid ROM')
-                    self.roms.append(rom_)
-                    info = rom_.module.get_info(game)
-                    self.game_found.emit(index, info, game, games_length)
-                else:
-                    logging.debug('[' + self.data['name'] + '] \'' + game + '\' is not a valid ROM')
-                    games_length -= 1
+                try:
+                    rom_ = rom.Rom(game, self.data['platforms'])
+                    if rom_.is_rom:
+                        logging.debug('[' + self.data['name'] + '] \'' + game + '\' is a valid ROM')
+                        self.roms.append(rom_)
+                        info = rom_.module.get_info(game)
+                        self.game_found.emit(index, info, game, games_length)
+                    else:
+                        logging.debug('[' + self.data['name'] + '] \'' + game + '\' is not a valid ROM')
+                        games_length -= 1
+                except:
+                    traceback.print_exc()
 
         logging.debug('[' + self.data['name'] + '] Found ' + str(games_length) + ' ROM' + ('s' if games_length != 1 else ''))
         self.games_loaded.emit()
