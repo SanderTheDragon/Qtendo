@@ -188,3 +188,6 @@ CMakeLists.txt.user*
 # Ignore compiled files
 ui/*.py
 res/*.py
+
+!ui/__init__.py
+!res/__init__.py
