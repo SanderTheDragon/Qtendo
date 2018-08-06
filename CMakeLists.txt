@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 3.10)
-project (Qtendo)
+project (Qtendo LANGUAGES NONE)
 
 
 
@@ -85,20 +85,37 @@ set (PY_FILES ${PY_FILES}
     "${PY_ROOT}/roms/snes.py"
     "${PY_ROOT}/roms/wii.py")
 
-foreach (PY_FILE ${PY_FILES})
-    string (REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/" "" TARGET_FILE ${PY_FILE})
-    set (PY_FILE_TUPLE_LIST_PRE ${PY_FILE_TUPLE_LIST_PRE} "( '${PY_FILE}', '${TARGET_FILE}' ), ")
-endforeach ()
-string (LENGTH "${PY_FILE_TUPLE_LIST_PRE}" LEN_PRE)
-math (EXPR LEN "${LEN_PRE} - 2")
-string (SUBSTRING "${PY_FILE_TUPLE_LIST_PRE}" 0 ${LEN} PY_FILE_TUPLE_LIST_LIST)
-string (REPLACE ";" "" PY_FILE_TUPLE_LIST "${PY_FILE_TUPLE_LIST_PRE}")
-
-configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/cmake/setup.py.in" "${CMAKE_BINARY_DIR}/setup.py")
-
 find_program (PYTHON python3)
-add_custom_target (cx ALL DEPENDS ui resources SOURCES ${PY_MAIN} ${PY_FILES})
-add_custom_command (TARGET cx
-    DEPENDS ui
-    COMMAND echo "Running setup.py"
-    COMMAND ${PYTHON} setup.py install)
+
+if (CMAKE_BUILD_TYPE STREQUAL "Release")
+    string (TOLOWER ${PROJECT_NAME} EXEC_NAME)
+
+    find_program (PYINSTALLER pyinstaller
+        PATHS "~/.local/bin")
+    add_custom_target (pyinstaller ALL DEPENDS ui resources SOURCES ${PY_MAIN} ${PY_FILES})
+    add_custom_command (TARGET pyinstaller
+        DEPENDS ui
+        COMMAND echo "Running PyInstaller..."
+        COMMAND ${PYINSTALLER} -F ${PY_MAIN}
+                    --distpath "${CMAKE_BINARY_DIR}"
+                    --workpath "${CMAKE_BINARY_DIR}/build"
+                    --hidden-import src.roms.3ds
+                    --hidden-import src.roms.fds
+                    --hidden-import src.roms.gamecube
+                    --hidden-import src.roms.n64
+                    --hidden-import src.roms.nes
+                    --hidden-import src.roms.snes
+                    --hidden-import src.roms.wii
+                    --hidden-import PyQt5
+                    --name ${EXEC_NAME})
+
+    add_custom_target (qtendo SOURCES ${PY_MAIN} ${PY_FILES})
+    add_custom_command (TARGET qtendo
+        COMMAND echo "Running Qtendo..."
+        COMMAND "${CMAKE_BINARY_DIR}/${EXEC_NAME}")
+else ()
+    add_custom_target (qtendo DEPENDS ui resources SOURCES ${PY_MAIN} ${PY_FILES})
+    add_custom_command (TARGET qtendo
+        COMMAND echo "Running Qtendo..."
+        COMMAND PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR} ${PYTHON} ${PY_MAIN})
+endif (CMAKE_BUILD_TYPE STREQUAL "Release")
