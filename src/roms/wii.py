@@ -1,6 +1,5 @@
 import collections
 import struct
-from titlecase import titlecase
 
 IsoHeader = collections.namedtuple('IsoHeader', 'disc_id game_code region_code maker_code disc_number disc_version audio_streaming stream_buffer_size wii_magicword gamecube_magicword game_title')
 CisoHeader = collections.namedtuple('CisoHeader', 'magic disc_id game_code region_code maker_code game_title')

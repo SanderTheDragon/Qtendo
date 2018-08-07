@@ -53,7 +53,7 @@ endforeach ()
 
 
 
-#Compile python
+#"Compile" python
 set (PY_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/src")
 set (PY_MAIN "${PY_ROOT}/main.py")
 set (PY_FILES ${PY_FILES}
@@ -63,6 +63,7 @@ set (PY_FILES ${PY_FILES}
     "${PY_ROOT}/system.py"
     "${PY_ROOT}/utils.py"
 
+    "${PY_ROOT}/dialogs/__init__.py"
     "${PY_ROOT}/dialogs/about.py"
     "${PY_ROOT}/dialogs/emulator_settings.py"
     "${PY_ROOT}/dialogs/settings.py"

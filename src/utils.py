@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 import subprocess
 from PyQt5.QtGui import QColor, QFont, QTextCharFormat
 
@@ -25,7 +26,7 @@ def find_files(root, filters):
     if type(filters) == str:
         filters = [ filters ]
 
-    file_list = []
+    file_list = [ ]
     for root_, directories, files in os.walk(root):
         for file in files:
             if '.' + file.split('.')[-1] in filters:
@@ -36,7 +37,7 @@ def find_files(root, filters):
 
 
 def execute(path, args):
-    arguments = []
+    arguments = [ ]
     if type(args) == str:
         arguments = args.split(' ')
     elif type(args) == list:
@@ -78,3 +79,9 @@ def char_format(color, style=[]):
         q_format.setFontItalic(True)
 
     return q_format
+
+
+
+def ansi_trim(text):
+    regex = re.compile('\x1B\[[0-?]*[ -/]*[@-~]')
+    return regex.sub('', text)

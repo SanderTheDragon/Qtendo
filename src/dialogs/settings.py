@@ -28,7 +28,7 @@ class SettingsDialog(QDialog, ui_settings.Ui_Settings):
         self.settings.setValue('qtendo/window/restore', self.windowCheckboxGeometry.isChecked())
 
         #Emulation
-        paths = []
+        paths = [ ]
         for i in range(self.pathList.count()):
             paths.append(self.pathList.item(i).text())
         self.settings.setValue('emulation/roms/paths', paths)

@@ -1,10 +1,10 @@
+import functools
 import logging
 import os
 import shlex
-import subprocess
 import traceback
 from PyQt5 import QtCore
-from PyQt5.QtCore import QDir, QSettings, QSize, Qt
+from PyQt5.QtCore import QDir, QProcess, QSettings, QSize, Qt
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtWidgets import QLabel, QMenu, QTableWidgetItem, QWidget
@@ -23,8 +23,9 @@ class Emulator(QWidget, ui_emulator.Ui_Emulator):
         super(Emulator, self).__init__()
         self.setupUi(self)
         self.data = data
-        self.processes = {}
-        self.roms = []
+
+        self.processes = { }
+        self.roms = [ ]
 
         self.settings = QSettings('SanderTheDragon', 'Qtendo')
         self.settings_prefix = 'emulation/emulator/' + self.data['name'].lower().replace(' ', '_')
@@ -81,6 +82,7 @@ class Emulator(QWidget, ui_emulator.Ui_Emulator):
         self.gameList.insertColumn(3)
         self.gameList.insertColumn(4)
         self.gameList.setHorizontalHeaderLabels([ 'Platform', 'ID', 'Title', 'Region', 'Path' ])
+        self.gameList.horizontalHeader().setStretchLastSection(True)
 
         self.gameList.setContextMenuPolicy(Qt.CustomContextMenu)
 
@@ -163,13 +165,46 @@ class Emulator(QWidget, ui_emulator.Ui_Emulator):
 
 
     def launch_game(self, path):
+        if path in self.processes:
+            return
+
         command = self.settings.value(self.settings_prefix + '/command', '{EXEC} {ARGS} {ROM}', type=str)
         command = command.replace('{EXEC}', self.settings.value(self.settings_prefix + '/path', self.data['path'], type=str))
         command = command.replace('{ARGS}', ' '.join(self.data['arguments']))
         command = command.replace('{ROM}', shlex.quote(path))
         logging.info('[' + self.data['name'] + '] Launching: `' + command + '`')
 
-        self.processes['path'] = subprocess.Popen(shlex.split(command), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process = QProcess(self)
+        process.finished.connect(functools.partial(self.end_game, path))
+
+        process.readyReadStandardError.connect(functools.partial(lambda path: self.log_game(path, bytes(self.processes[path].readAllStandardError()).decode('utf-8'), logging.error), path))
+        process.readyReadStandardOutput.connect(functools.partial(lambda path: self.log_game(path, bytes(self.processes[path].readAllStandardOutput()).decode('utf-8')), path))
+        process.errorOccurred.connect(functools.partial(lambda path, error: self.log_game(path, str(error), logging.error), path))
+
+        args = shlex.split(command)
+        self.processes[path] = process
+        self.processes[path].start(args[0], args[1:])
+
+
+    def log_game(self, path, message, method=logging.info):
+        if '\n' in message:
+            for line in message.split('\n'):
+                self.log_game(path, line, method)
+        else:
+            message = utils.ansi_trim(message.strip())
+            if len(message) == 0:
+                return
+
+            method('[' + self.data['name'] + ':' + path[path.rfind('/') + 1:] + '] ' + message)
+
+
+    def end_game(self, path, code, status):
+        if code == 0:
+            logging.info('[' + self.data['name'] + '] Process for \'' + path + '\' exited')
+        else:
+            logging.error('[' + self.data['name'] + '] Process for \'' + path + '\' exited with non-zero code: ' + str(code))
+
+        del self.processes[path]
 
 
     def reload_settings(self):

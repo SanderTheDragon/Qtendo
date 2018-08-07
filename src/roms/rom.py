@@ -6,7 +6,7 @@ class Rom:
     def __init__(self, path, platform_hints):
         self.path = path
 
-        possible_platforms = []
+        possible_platforms = [ ]
         for platform in platform_hints.keys():
             if '.' + self.path.split('.')[-1] in platform_hints[platform]:
                 possible_platforms.append(platform)

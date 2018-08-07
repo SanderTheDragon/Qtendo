@@ -48,4 +48,4 @@ def get_info(path):
             'region': { 'E': 'United States', 'P': 'Europe', 'J': 'Japan', 'A': 'Any' }[prod_code[9]]
         }
 
-    return {}
+    return { }
