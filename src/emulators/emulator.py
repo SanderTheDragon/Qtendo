@@ -179,9 +179,12 @@ class Emulator(QWidget, ui_emulator.Ui_Emulator):
         process = QProcess(self)
         process.finished.connect(functools.partial(self.end_game, path))
 
-        process.readyReadStandardError.connect(functools.partial(lambda path: self.log_game(path, bytes(self.processes[path].readAllStandardError()).decode('utf-8'), logging.error), path))
-        process.readyReadStandardOutput.connect(functools.partial(lambda path: self.log_game(path, bytes(self.processes[path].readAllStandardOutput()).decode('utf-8')), path))
-        process.errorOccurred.connect(functools.partial(lambda path, error: self.log_game(path, str(error), logging.error), path))
+        if self.settings.value('emulation/log/stdout', True, type=bool):
+            process.readyReadStandardOutput.connect(functools.partial(lambda path: self.log_game(path, bytes(self.processes[path].readAllStandardOutput()).decode('utf-8')), path))
+
+        if self.settings.value('emulation/log/stderr', True, type=bool):
+            process.readyReadStandardError.connect(functools.partial(lambda path: self.log_game(path, bytes(self.processes[path].readAllStandardError()).decode('utf-8'), logging.error), path))
+            process.errorOccurred.connect(functools.partial(lambda path, error: self.log_game(path, str(error), logging.error), path))
 
         args = shlex.split(command)
         self.processes[path] = process
