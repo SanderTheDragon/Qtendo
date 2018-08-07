@@ -94,7 +94,8 @@ class Emulator(QWidget, ui_emulator.Ui_Emulator):
         self.gameList.customContextMenuRequested.connect(lambda position: self.game_list_context_menu(position))
         self.gameList.cellDoubleClicked.connect(lambda row, column: self.launch_game(self.gameList.item(row, 4).text()))
         self.refreshButton.pressed.connect(lambda: ( self.reset_list(), Thread(target=self.find_games, daemon=True).start() ))
-        self.settingsButton.pressed.connect(lambda: ( self.settings_dialog.exec_() ))
+        self.settingsButton.pressed.connect(lambda: self.settings_dialog.exec_())
+        self.filterEdit.textChanged.connect(lambda text: self.search())
 
 
 
@@ -162,6 +163,7 @@ class Emulator(QWidget, ui_emulator.Ui_Emulator):
         self.gameList.sortItems(1)
         self.progressBar.setVisible(False)
         self.refreshButton.setEnabled(True)
+        self.search()
 
 
     def launch_game(self, path):
@@ -228,3 +230,12 @@ class Emulator(QWidget, ui_emulator.Ui_Emulator):
 
         if action == launchAction:
              self.launch_game(self.gameList.item(self.gameList.selectionModel().selectedRows()[0].row(), 4).text())
+
+
+    def search(self):
+        text = self.filterEdit.text()
+        for i in range(self.gameList.rowCount()):
+            if text.lower() in self.gameList.item(i, 2).text().lower():
+                self.gameList.showRow(i)
+            else:
+                self.gameList.hideRow(i)
