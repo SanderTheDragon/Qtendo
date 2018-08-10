@@ -10,9 +10,9 @@ from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtWidgets import QLabel, QMenu, QTableWidgetItem, QWidget
 from threading import Thread
 
-from .. import utils
-from ..dialogs import emulator_settings
-from ..roms import rom
+from src import utils
+from src.dialogs import emulator_settings
+from src.roms import rom
 from ui import ui_emulator
 
 class Emulator(QWidget, ui_emulator.Ui_Emulator):

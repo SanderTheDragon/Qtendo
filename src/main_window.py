@@ -159,14 +159,14 @@ class MainWindow(QMainWindow, ui_window.Ui_Window):
 
     def find_emulators(self):
         #Search for FCEUX
-        self.emulator_found.emit(fceux.find())
+        self.emulator_found.emit(fceux.find(None if not self.settings.contains('emulation/emulator/fceux/path') else self.settings.value('emulation/emulator/fceux/path', type=str)))
         #Search for ZSNES
-        self.emulator_found.emit(zsnes.find())
+        self.emulator_found.emit(zsnes.find(None if not self.settings.contains('emulation/emulator/zsnes/path') else self.settings.value('emulation/emulator/zsnes/path', type=str)))
         #Search for Mupen64Plus
-        self.emulator_found.emit(mupen64plus.find())
+        self.emulator_found.emit(mupen64plus.find(None if not self.settings.contains('emulation/emulator/mupen64plus/path') else self.settings.value('emulation/emulator/mupen64plus/path', type=str)))
         #Search for Dolphin Emulator
-        self.emulator_found.emit(dolphin.find())
+        self.emulator_found.emit(dolphin.find(None if not self.settings.contains('emulation/emulator/dolphin/path') else self.settings.value('emulation/emulator/dolphin/path', type=str)))
         #Search for Citra
-        self.emulator_found.emit(citra.find())
+        self.emulator_found.emit(citra.find(None if not self.settings.contains('emulation/emulator/citra/path') else self.settings.value('emulation/emulator/citra/path', type=str)))
 
         self.emulators_loaded.emit()

@@ -3,7 +3,7 @@ import os
 from PyQt5.QtCore import QSettings
 from PyQt5.QtWidgets import QDialog
 
-from .. import syntax
+from src import syntax
 from ui import ui_emulator_settings
 
 class EmulatorSettingsDialog(QDialog, ui_emulator_settings.Ui_EmulatorSettings):

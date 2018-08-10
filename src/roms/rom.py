@@ -1,6 +1,6 @@
 import importlib
 
-from .. import utils
+from src import utils
 
 class Rom:
     def __init__(self, path, platform_hints):

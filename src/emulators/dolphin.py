@@ -1,8 +1,8 @@
 import os
 from PyQt5.QtWidgets import QWidget
 
-from .. import utils
-from . import emulator
+from src import utils
+from src.emulators import emulator
 
 class EmulatorDolphin(emulator.Emulator):
     def __init__(self, data):
@@ -48,8 +48,11 @@ class EmulatorDolphin(emulator.Emulator):
 
 
 
-def find():
-    path = utils.find_executable('dolphin-emu-nogui')
+def find(path_hint=None):
+    path = path_hint
+
+    if path is None or not os.path.isfile(path):
+        path = utils.find_executable('dolphin-emu-nogui')
 
     data = {
         'name': 'Dolphin Emulator',

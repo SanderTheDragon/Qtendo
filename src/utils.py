@@ -1,25 +1,12 @@
 import logging
 import os
 import re
+import shutil
 import subprocess
 from PyQt5.QtGui import QColor, QFont, QTextCharFormat
 
 def find_executable(name):
-    paths = [
-        #Standard paths
-        '/bin',
-        '/usr/bin',
-        '/usr/local/bin',
-
-        #Other possible paths
-        '/usr/games',
-        '/usr/local/games'
-    ]
-
-    for path in paths:
-        filepath = path + '/' + name
-        if os.path.isfile(filepath):
-            return filepath
+    return shutil.which(name)
 
 
 def find_files(root, filters):

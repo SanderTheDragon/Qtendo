@@ -8,7 +8,6 @@ from PyQt5.QtWidgets import QApplication
 
 from src import main_window
 
-
 def setup_logging():
     formatter = '[%(asctime)s %(filename)s %(levelname)s] %(message)s'
     log_level = logging.DEBUG

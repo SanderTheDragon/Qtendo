@@ -1,7 +1,7 @@
 from PyQt5.QtCore import QRegularExpression, QRegularExpressionMatch, QRegularExpressionMatchIterator
 from PyQt5.QtGui import QSyntaxHighlighter
 
-from . import utils
+from src import utils
 
 class IniHighlighter(QSyntaxHighlighter):
     def __init__(self, parent=None):
