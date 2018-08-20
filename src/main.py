@@ -14,6 +14,8 @@ def setup_logging():
 
     #Log to file
     directory = os.path.dirname(QSettings('SanderTheDragon', 'Qtendo').fileName())
+    if not os.path.isdir(directory):
+        os.makedirs(directory)
 
     logging.basicConfig(filename=os.path.join(directory, 'qtendo.log'), filemode='w', format=formatter, level=log_level)
 

@@ -70,8 +70,9 @@ class EmulatorSettingsDialog(QDialog, ui_emulator_settings.Ui_EmulatorSettings):
 
 
     def change_file(self, file):
-        with open(file, 'r') as stream:
-            self.fileTextEdit.setText(stream.read())
+        if os.path.isfile(file):
+            with open(file, 'r') as stream:
+                self.fileTextEdit.setText(stream.read())
 
         if self.parent().get_config_format() == 'ini':
             self.highlighter = syntax.IniHighlighter(self.fileTextEdit.document())

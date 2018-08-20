@@ -1,4 +1,4 @@
-from PyQt5.QtCore import QDir, QSettings
+from PyQt5.QtCore import QSettings
 from PyQt5.QtWidgets import QDialog, QFileDialog
 
 from ui import ui_settings
@@ -20,7 +20,7 @@ class SettingsDialog(QDialog, ui_settings.Ui_Settings):
         self.windowCheckboxGeometry.setChecked(self.settings.value('qtendo/window/restore', True, type=bool))
 
         #Emulation
-        self.pathList.addItems(self.settings.value('emulation/roms/paths', [ QDir.homePath() ], type=str))
+        self.pathList.addItems(self.settings.value('emulation/roms/paths', [ ], type=str))
         self.pathList.itemSelectionChanged.connect(lambda: self.removePathButton.setEnabled(len(self.pathList.selectedItems()) > 0))
         self.logCheckboxLog.setChecked(self.settings.value('emulation/log/stdout', True, type=bool))
         self.logCheckboxLogError.setChecked(self.settings.value('emulation/log/stderr', True, type=bool))

@@ -4,7 +4,7 @@ import os
 import shlex
 import traceback
 from PyQt5 import QtCore
-from PyQt5.QtCore import QDir, QProcess, QSettings, QSize, Qt
+from PyQt5.QtCore import QProcess, QSettings, QSize, Qt
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtWidgets import QLabel, QMenu, QTableWidgetItem, QWidget
@@ -106,7 +106,8 @@ class Emulator(QWidget, ui_emulator.Ui_Emulator):
 
         logging.debug('[' + self.data['name'] + '] Searching for ( ' + ', '.join(file_types) + ' ) files')
 
-        paths = self.settings.value('emulation/roms/paths', [ QDir.homePath() ], type=str)
+        paths = self.settings.value('emulation/roms/paths', [ ], type=str)
+        games_length = 0
         for path in paths:
             if not os.path.isdir(path):
                 continue

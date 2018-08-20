@@ -45,7 +45,7 @@ def find(path_hint=None):
         'get_version': get_version
     }
 
-    if len(path) > 0:
+    if not path is None and len(path) > 0:
         data['path'] = path
         data['version'] = get_version(path)
     else:
